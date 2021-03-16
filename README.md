@@ -755,4 +755,66 @@ XXX('selector');
 包含了相对应的声明文件，`XXX.d.ts`。
 
 #### 书写声明文件
+当我们需要书写自己的声明文件时，我们就需要了解如何书写声明文件了。
 
+##### 全局变量
+
+- `declare var` 声明全局变量
+- `declare function` 声明全局方法
+- `declare class` 声明全局类
+- `declare enum` 声明全局枚举类型
+- `declare namespace` 声明（含有子属性的）全局对象
+- `interface 和 type` 声明全局类型
+
+##### 直接扩展全局变量
+当第三方库扩展一个全局变量，但是此时全局变量的类型却没有，这将会导致 ts 编译错误。此时，就需要
+扩展全局变量的类型。比如扩展 `String` 类型。
+
+```
+interface String {
+    haha(): string
+}
+
+'example'.haha()
+```
+通过声明合并，使用 `interface String` 即可给 `String` 添加属性或方法。
+
+当然，同时也可以使用 `declare namespace` 给已有的空间命名添加类型声明，手法类同声明合并。
+```
+// 最初 命名空间
+declare namespace XXX {
+    interface EXAMPLE {
+        origin: string
+    }
+}
+
+// 声明 添加 test 属性定义
+declare namespace XXX {
+    interface EXAMPLE {
+        test: string
+    }
+}
+```
+值的注意的是，不能重载在命名空间已有的最叶子类型定义
+
+##### 模块插件
+如果是需要扩展原有模块的话，我们首先在类型声明文件先引用原有模块，再使用 `declare module` 扩展有有模块。
+
+```
+// types/moment-plugin/index.d.ts
+
+import * as moment from 'moment';
+
+declare module 'moment' {
+    export function foo(): moment.CalendarKey;
+}
+
+// src/index.ts
+
+import * as moment from 'moment';
+import 'moment-plugin';
+
+moment.foo();
+```
+
+### 内置对象
