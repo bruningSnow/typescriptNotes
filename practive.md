@@ -43,3 +43,22 @@ infer 相当于一个类型收集关键词，与 extends 结合使用。
     type TupleToObject<T extends readonly string[]> = {
         [key in T[number]]: key
     }
+
+### 获取元组长度
+
+创建一个通用的 Length，接受一个 readonly 的数组，返回这个数组的长度。
+
+    type Length<T extends readonly any[]> = T["length"];
+
+### Exclude 实现
+
+实现内置的 Exclude <T, U>类型，但不能直接使用它本身。<br>
+从联合类型 T 中排除 U 的类型成员，来构造一个新的类型。
+
+    type MyExclude<T, U> = T extends U ? never : T;
+
+#### 扩展
+
+    type test = 'test' | never
+    等同于
+    type test = 'test'
