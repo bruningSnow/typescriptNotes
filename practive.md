@@ -120,3 +120,18 @@ infer 相当于一个类型收集关键词，与 extends 结合使用。
 ```
 目前发现在 TS 类型系统计算中 ... (扩展符)，可以应用于 数组/元组，对象类型不可使用 ... (扩展符)进行扩展
 ```
+
+### Equals 实现
+
+在类型系统里实现类型比较，验证入参类型是否相等
+
+```
+例如：
+
+  type Result = Equals<any, number> // expected to be false
+  type Result_1 = Equals<any, any> // expected to be true
+```
+
+    type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+    ? true
+    : false;
