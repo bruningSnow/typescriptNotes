@@ -62,3 +62,30 @@ infer 相当于一个类型收集关键词，与 extends 结合使用。
     type test = 'test' | never
     等同于
     type test = 'test'
+
+### Awaited 实现
+
+假如我们有一个 Promise 对象，这个 Promise 对象会返回一个类型。在 TS 中，我们用 Promise 中的 T 来描述这个 Promise 返回的类型。请你实现一个类型，可以获取这个类型。
+
+```
+例如：
+
+  type inferType = {
+    tt: string;
+  };
+  type TPromise = Promise<inferType>;
+  type tt = Awaited<TPromise>;
+
+  类型tt 等同于 类型inferType
+```
+
+    type Awaited<T extends Promise<any>> = T extends Promise<infer U>
+    ? U extends Promise<any>
+      ? Awaited<U>
+      : U
+    : T;
+
+#### 注意
+
+- infer 始终搭配 extends 进行使用
+- 三元进行类型间的计算
