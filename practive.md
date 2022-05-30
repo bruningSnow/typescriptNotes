@@ -135,3 +135,19 @@ infer 相当于一个类型收集关键词，与 extends 结合使用。
     type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
     ? true
     : false;
+
+### Includes 实现
+
+在类型系统里实现 JavaScript 的 Array.includes 方法，这个类型接受两个参数，返回的类型要么是 true 要么是 false。
+
+```
+例如：
+
+  type isPillarMen = Includes<['Kars', 'Esidisi', 'Wamuu', 'Santana'], 'Dio'> // expected to be `false`
+```
+
+    type Includes_1<T extends any[], U> = T extends [infer F, ...infer R]
+    ? Equals<F, U> extends true
+      ? true
+      : Includes_1<R, U>
+    : false;
