@@ -151,3 +151,21 @@ infer 相当于一个类型收集关键词，与 extends 结合使用。
       ? true
       : Includes<R, U>
     : false;
+
+### Omit 实现
+
+不使用 Omit 实现 TypeScript 的 Omit<T, K> 泛型。</br>
+Omit 会创建一个省略 K 中字段的 T 对象。
+
+    1、第一种
+    type MyOmit<T, U extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+
+    2、第二种
+    type MyOmit<T, U extends keyof any> = {
+        [key in Exclude<keyof T, U>]: T[key]
+    }
+
+    3、第三种
+    type MyOmit<T, U extends keyof any> = {
+        [key in keyof T as key extends U ? never : key]: T[key]
+    }
