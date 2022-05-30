@@ -146,8 +146,8 @@ infer 相当于一个类型收集关键词，与 extends 结合使用。
   type isPillarMen = Includes<['Kars', 'Esidisi', 'Wamuu', 'Santana'], 'Dio'> // expected to be `false`
 ```
 
-    type Includes_1<T extends any[], U> = T extends [infer F, ...infer R]
+    type Includes<T extends any[], U> = T extends [infer F, ...infer R]
     ? Equals<F, U> extends true
       ? true
-      : Includes_1<R, U>
+      : Includes<R, U>
     : false;
