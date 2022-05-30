@@ -89,3 +89,16 @@ infer 相当于一个类型收集关键词，与 extends 结合使用。
 
 - infer 始终搭配 extends 进行使用
 - 三元进行类型间的计算
+
+### If 实现
+
+实现一个 IF 类型，它接收一个条件类型 C ，一个判断为真时的返回类型 T ，以及一个判断为假时的返回类型 F。 C 只能是 true 或者 false， T 和 F 可以是任意类型。
+
+```
+例如：
+
+  type A = If<true, 'a', 'b'>  // expected to be 'a'
+  type B = If<false, 'a', 'b'> // expected to be 'b'
+```
+
+    type If<C extends boolean, T, F> = C extends true ? T : F
