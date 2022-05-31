@@ -221,3 +221,33 @@ todo.completed = true // OK
     {
         [key in keyof T as key extends U ? never : key]: T[key];
     };
+
+### DeepReadonly
+
+实现一个通用的`DeepReadonly<T>`，它将对象的每个参数及其子对象递归地设为只读。
+
+```
+例如：
+
+type X = {
+  x: {
+    a: 1
+    b: 'hi'
+  }
+  y: 'hey'
+}
+
+type Expected = {
+  readonly x: {
+    readonly a: 1
+    readonly b: 'hi'
+  }
+  readonly y: 'hey'
+}
+
+type Todo = DeepReadonly<X> // should be same as `Expected`
+```
+
+    type DeepReadonly<T extends Record<string, any>> = {
+        readonly [key in keyof T]: T[key] extends Record<string, any> ? DeepReadonly<T[key]> : T[key];
+    }
