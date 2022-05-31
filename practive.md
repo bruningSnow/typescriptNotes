@@ -10,7 +10,7 @@
        [key in U]: T[key];
      };
 
-### Readonl 实现
+### Readonly 实现
 
 作用：将对象类型全部变为只读
 
@@ -169,3 +169,55 @@ Omit 会创建一个省略 K 中字段的 T 对象。
     type MyOmit<T, U extends keyof any> = {
         [key in keyof T as key extends U ? never : key]: T[key]
     }
+
+### ReturnType 实现
+
+不使用 ReturnType 实现 TypeScript 的 ReturnType<T> 泛型。
+
+```
+例如：
+
+const fn = (v: boolean) => {
+  if (v)
+    return 1
+  else
+    return 2
+}
+
+type a = MyReturnType<typeof fn> // 应推导出 "1 | 2"
+```
+
+    type MyReturnType<T> = T extends (...arg: any[]) => infer F ? F : T;
+
+### Readonly 2
+
+实现一个通用 MyReadonly2<T, K>，它带有两种类型的参数 T 和 K。
+
+K 指定应设置为 Readonly 的 T 的属性集。如果未提供 K，则应使所有属性都变为只读，就像普通的 Readonly<T>一样。
+
+```
+例如：
+
+interface Todo {
+  title: string
+  description: string
+  completed: boolean
+}
+
+const todo: MyReadonly2<Todo, 'title' | 'description'> = {
+  title: "Hey",
+  description: "foobar",
+  completed: false,
+}
+
+todo.title = "Hello" // Error: cannot reassign a readonly property
+todo.description = "barFoo" // Error: cannot reassign a readonly property
+todo.completed = true // OK
+```
+
+    type Readonly_1<T, U extends keyof T = keyof T> = {
+        readonly [key in U]: T[key];
+    } &
+    {
+        [key in keyof T as key extends U ? never : key]: T[key];
+    };
