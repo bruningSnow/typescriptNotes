@@ -265,3 +265,27 @@ type Test = TupleToUnion<Arr> // expected to be '1' | '2' | '3'
 ```
 
     type TupleToUnion<T extends any[]> = T[number]
+
+### Last
+
+实现一个通用`Last<T>`，它接受一个数组 T 并返回其最后一个元素的类型。
+
+```
+例如：
+
+type arr1 = ['a', 'b', 'c']
+type arr2 = [3, 2, 1]
+
+type tail1 = Last<arr1> // expected to be 'c'
+type tail2 = Last<arr2> // expected to be 1
+```
+
+    第一种：
+    type Last<T extends any[]> = T extends [infer end]
+       ? end
+       : T extends [infer first, ...infer rest]
+         ? Last<rest>
+         : never;
+
+    第二种：
+    type Last<T extends any[]> = T extends [...infer r, infer end] ? end : never;
