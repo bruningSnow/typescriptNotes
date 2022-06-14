@@ -305,3 +305,36 @@ type re2 = Pop<arr2> // expected to be [3, 2]
 ```
 
     type Pop<T extends any[]> = T extends [...infer R, infer E] ? R : never
+
+### LookUp
+
+有时，您可能希望根据其属性在并集中查找类型。
+
+在此挑战中，我们想通过在联合 Cat | Dog 中搜索公共 type 字段来获取相应的类型。换句话说，在以下示例中，我们期望`LookUp<Dog | Cat, 'dog'>`获得 Dog，`LookUp<Dog | Cat, 'cat'>`获得 Cat。
+
+```
+例如：
+
+interface Cat {
+  type: 'cat'
+  breeds: 'Abyssinian' | 'Shorthair' | 'Curl' | 'Bengal'
+}
+
+interface Dog {
+  type: 'dog'
+  breeds: 'Hound' | 'Brittany' | 'Bulldog' | 'Boxer'
+  color: 'brown' | 'white' | 'black'
+}
+
+type MyDog = LookUp<Cat | Dog, 'dog'> // expected to be `Dog`
+```
+
+    type LookUp<T extends { type: string; [key: string]: any }, U extends T["type"]> = T extends T
+    ? U extends T["type"]
+      ? T
+      : never
+    : never
+
+#### 知识点
+
+`T extends T` 可以提取联合类型中的各个子类
