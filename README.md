@@ -159,6 +159,51 @@ TypeScript 的支持。
 - 开始编译我们写的 .ts 文件了
   `tsc [name].ts`
 
+## ts 关键词
+
+> 在日常使用环境中，存在着很多高频的 ts 关键词，这些可以变化出很多 ts 高级用法
+
+### typeof
+
+获取数据体的 ts 类型，例如：
+
+```
+const arr = [1, 2, 3, '4'];
+type TArr = typeof arr
+// 等同于
+(number | string) []
+```
+
+### in
+
+获取联合类型中的各个子类型，例如：
+
+```
+type Test = string | number
+type Result = {
+    [key in Test]: key
+}
+// 等同于
+{
+    [key: string]: string;
+    [key: number]: number;
+}
+```
+
+### keyof
+
+获取接口中所有的属性集合，以联合类型形式抛出，例如：
+
+```
+type Test = {
+  t: string;
+  readonly y: number;
+}
+type Result = keyof Test
+// 等同于
+t | y
+```
+
 ## 基础类型
 
 > TypeScript 中包含两个关于类型的概念：顶层类型（所有类型都是其子类）、底层类型（是所有类
