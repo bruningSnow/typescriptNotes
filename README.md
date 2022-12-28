@@ -1006,3 +1006,181 @@ npm install @types/node --save-dev
 
 - [内置对象](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects)
 - [TypeScript 核心库的定义文件](https://github.com/Microsoft/TypeScript/tree/main/src/lib)
+
+## 进阶
+
+> 本部分介绍一些高级的类型与技术，具体内容包括：
+
+- [类型别名](https://ts.xcatliu.com/advanced/type-aliases.html)
+- [字符串字面量类型](https://ts.xcatliu.com/advanced/string-literal-types.html)
+- [元组](https://ts.xcatliu.com/advanced/tuple.html)
+- [枚举](https://ts.xcatliu.com/advanced/enum.html)
+- [类](https://ts.xcatliu.com/advanced/class.html)
+- [类与接口](https://ts.xcatliu.com/advanced/class-and-interfaces.html)
+- [泛型](https://ts.xcatliu.com/advanced/generics.html)
+- [声明合并](https://ts.xcatliu.com/advanced/declaration-merging.html)
+- [扩展阅读](https://ts.xcatliu.com/advanced/further-reading.html)
+
+### 类型别名
+
+类型别名用来给一个类型起个新名字。
+
+#### 简单的例子
+
+```
+type Name = string;
+type NameResolver = () => string;
+type NameOrResolver = Name | NameResolver;
+function getName(n: NameOrResolver): Name {
+    if (typeof n === 'string') {
+        return n;
+    } else {
+        return n();
+    }
+}
+```
+
+上例中，我们使用 `type` 创建类型别名。
+
+类型别名常用于联合类型。
+
+#### 参考
+
+- [Advanced Types # Type Aliases](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-aliases)（[中文版](https://zhongsp.gitbooks.io/typescript-handbook/content/)）
+
+### 字符串字面量类型
+
+字符串字面量类型用来约束取值只能是某几个字符串中的一个。
+
+#### 简单的例子
+
+```
+type EventNames = 'click' | 'scroll' | 'mousemove';
+function handleEvent(ele: Element, event: EventNames) {
+    // do something
+}
+
+handleEvent(document.getElementById('hello'), 'scroll');  // 没问题
+handleEvent(document.getElementById('world'), 'dblclick'); // 报错，event 不能为 'dblclick'
+
+// index.ts(7,47): error TS2345: Argument of type '"dblclick"' is not assignable to parameter of type 'EventNames'.
+```
+
+上例中，我们使用 `type` 定了一个字符串字面量类型 `EventNames`，它只能取三种字符串中的一种。
+
+注意，**类型别名与字符串字面量类型都是使用** `type` **进行定义**。
+
+#### 参考
+
+- [Advanced Types # Type Aliases](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-aliases)（[中文版](https://zhongsp.gitbooks.io/typescript-handbook/content/)）
+
+### 元组
+
+数组合并了相同类型的对象，而元组（Tuple）合并了不同类型的对象。
+
+元组起源于函数编程语言（如 F#），这些语言中会频繁使用元组。
+
+#### 简单的例子
+
+定义一对值分别为 `string` 和 `number` 的元组：
+
+```
+let tom: [string, number] = ['Tom', 25];
+```
+
+当赋值或访问一个已知索引的元素时，会得到正确的类型：
+
+```
+let tom: [string, number];
+tom[0] = 'Tom';
+tom[1] = 25;
+
+tom[0].slice(1);
+tom[1].toFixed(2);
+```
+
+也可以只赋值其中一项：
+
+```
+let tom: [string, number];
+tom[0] = 'Tom';
+```
+
+```
+let tom: [string, number];
+tom = ['Tom'];
+
+// Property '1' is missing in type '[string]' but required in type '[string, number]'.
+```
+
+#### 越界的元素
+
+当添加越界的元素时，它的类型会被限制为元组中每个类型的联合类型：
+
+```
+let tom: [string, number];
+tom = ['Tom', 25];
+tom.push('male');
+tom.push(true);
+
+// Argument of type 'true' is not assignable to parameter of type 'string | number'.
+```
+
+#### 参考
+
+- [Advanced Types # Type Aliases](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-aliases)（[中文版](https://zhongsp.gitbooks.io/typescript-handbook/content/)）
+
+### 枚举
+
+枚举（Enum）类型用于取值被限定在一定范围内的场景，比如一周只能有七天，颜色限定为红绿蓝等。
+
+#### 简单的例子
+
+枚举使用 `enum` 关键字来定义：
+
+```
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
+```
+
+枚举成员会被赋值为从 `0` 开始递增的数字，同时也会对枚举值到枚举名进行反向映射：
+
+```
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
+
+console.log(Days["Sun"] === 0); // true
+console.log(Days["Mon"] === 1); // true
+console.log(Days["Tue"] === 2); // true
+console.log(Days["Sat"] === 6); // true
+
+console.log(Days[0] === "Sun"); // true
+console.log(Days[1] === "Mon"); // true
+console.log(Days[2] === "Tue"); // true
+console.log(Days[6] === "Sat"); // true
+```
+
+事实上，上面的例子会被编译为：
+
+```
+var Days;
+(function (Days) {
+    Days[Days["Sun"] = 0] = "Sun";
+    Days[Days["Mon"] = 1] = "Mon";
+    Days[Days["Tue"] = 2] = "Tue";
+    Days[Days["Wed"] = 3] = "Wed";
+    Days[Days["Thu"] = 4] = "Thu";
+    Days[Days["Fri"] = 5] = "Fri";
+    Days[Days["Sat"] = 6] = "Sat";
+})(Days || (Days = {}));
+```
+
+#### 枚举赋值
+
+对枚举的初始化赋值要分为赋值 `number` 类型还是 `非number` 类型（都存在前面属性值被后面属性值覆盖情况）。
+
+对于 number 类型，当存在属性没有初始化赋值操作时，属性会从最近一个已赋值的属性每次累增 +1。
+
+对于 非 number 类型，赋值操作必须要对所有属性进行赋值操作或者仅只能对最后一个属性进行赋值操作。
+
+#### 参考
+
+- [Advanced Types # Type Aliases](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-aliases)（[中文版](https://zhongsp.gitbooks.io/typescript-handbook/content/)）
